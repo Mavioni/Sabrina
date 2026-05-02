@@ -16,12 +16,12 @@ const {
   streamTextMock: vi.fn(),
   mcpMock: vi.fn(async (): Promise<Tool[]> => []),
   debugMock: vi.fn(async (): Promise<Tool[]> => []),
-  createSparkCommandToolMock: vi.fn(async (): Promise<unknown> => ({
+  createSparkCommandToolMock: vi.fn(async (): Promise<unknown[]> => [{
     name: 'spark',
     description: '',
     parameters: {},
     execute: vi.fn(),
-  })),
+  }]),
 }))
 
 vi.mock('@xsai/model', () => ({
@@ -48,12 +48,20 @@ const provider = {
   }),
 } as unknown as ChatProvider
 
+// NOTICE:
+// `streamFrom` (packages/core-agent/src/runtime/llm-service.ts) treats
+// `streamResult.steps` as the authoritative completion signal — it calls
+// `resolveOnce()` as soon as `steps` resolves. If we return resolved promises
+// here, every stream resolves immediately and short-circuits tests that need
+// `waitForTools` holds or `onEvent({ type: 'error' })` rejections to drive
+// the outcome. Keep these pending so the tests' `onEvent` events are the
+// ones that settle the stream.
 function createMockStreamResult() {
   return {
-    steps: Promise.resolve([]),
-    messages: Promise.resolve([]),
-    usage: Promise.resolve({}),
-    totalUsage: Promise.resolve({}),
+    steps: new Promise<unknown[]>(() => {}),
+    messages: new Promise<unknown[]>(() => {}),
+    usage: new Promise<unknown>(() => {}),
+    totalUsage: new Promise<unknown>(() => {}),
   }
 }
 

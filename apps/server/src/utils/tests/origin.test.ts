@@ -46,6 +46,11 @@ describe('origin utils', () => {
 
     expect(getAuthTrustedOrigins({ API_SERVER_URL: 'https://api.airi.moeru.ai' } as any, request)).toEqual([
       'https://api.airi.moeru.ai',
+      // The function injects loopback wildcards so dev clients on any port are
+      // trusted without per-port reconfiguration. See `ALWAYS_TRUSTED_AUTH_ORIGINS`
+      // in `src/utils/origin.ts` for the rationale.
+      'http://localhost:*',
+      'http://127.0.0.1:*',
       'http://localhost:5173',
     ])
   })

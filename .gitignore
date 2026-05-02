@@ -41,6 +41,10 @@ cert*/
 # Test coverage
 coverage/
 
+# Vitest browser-mode runtime artifacts
+.vitest-attachments/
+**/__screenshots__/
+
 # Build
 out/
 bundle/

@@ -3,7 +3,7 @@ import type { OIDCFlowParams, TokenResponse } from './auth-oidc'
 import { createAuthClient } from 'better-auth/vue'
 
 import { useAuthStore } from '../stores/auth'
-import { OIDC_CLIENT_ID, OIDC_REDIRECT_URI } from './auth-config'
+import { getOIDCRedirectURI, OIDC_CLIENT_ID } from './auth-config'
 import { buildAuthorizationURL, persistFlowState } from './auth-oidc'
 import { SERVER_URL } from './server'
 
@@ -212,7 +212,7 @@ export async function signInOIDC(params: OIDCFlowParams) {
 export async function triggerSignIn(opts?: { provider?: OAuthProvider }): Promise<void> {
   await signInOIDC({
     clientId: OIDC_CLIENT_ID,
-    redirectUri: OIDC_REDIRECT_URI,
+    redirectUri: getOIDCRedirectURI(),
     ...opts,
   })
 }

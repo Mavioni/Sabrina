@@ -156,6 +156,24 @@ vi.mock('../../providers', () => ({
   }),
 }))
 
+// NOTICE:
+// Stub the character orchestrator module to keep the contract test independent of
+// `../../character/index.ts`, which transitively loads `useAiriCardStore` and
+// calls `useI18n()` at setup time. In the Vitest node pool there is no Vue
+// component context, so `useI18n()` throws and breaks the contract harness.
+const handleSparkNotifyWithReactionMock = vi.fn()
+vi.mock('../../character', () => ({
+  useCharacterOrchestratorStore: () => ({
+    handleSparkNotifyWithReaction: handleSparkNotifyWithReactionMock,
+  }),
+}))
+
+vi.mock('../../devtools/context-observability', () => ({
+  useContextObservabilityStore: () => ({
+    recordLifecycle: vi.fn(),
+  }),
+}))
+
 vi.mock('./channel-server', () => ({
   useModsServerChannelStore: () => ({
     ensureConnected: ensureConnectedMock,

@@ -45,7 +45,13 @@ vi.mock('crossws/server', () => ({
   plugin: vi.fn(() => ({})),
 }))
 
-vi.mock('..', () => ({
+// NOTICE:
+// The test file lives at `src/server.test.ts`, but the SUT is `src/server/index.ts`,
+// which imports `setupApp`/`normalizeLoggerConfig` via `from '..'` — that resolves
+// to `src/index.ts`. Mocking `'..'` from this test resolves to the package root
+// (different module), so the mock would not intercept. Mock `'./index'` so the
+// resolved path matches `src/index.ts` for both the test and the SUT.
+vi.mock('./index', () => ({
   normalizeLoggerConfig: () => ({
     appLogFormat: 'pretty',
     appLogLevel: 'log',
